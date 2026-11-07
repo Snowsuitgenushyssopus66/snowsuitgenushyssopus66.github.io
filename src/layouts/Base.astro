@@ -1,0 +1,172 @@
+---
+// Base layout: <head> metadata, theme handling, header and footer.
+// Every page wraps its content in <Base title="..." description="...">.
+import '../styles/global.css';
+import { profile } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Path to the social preview image, relative to the site root. */
+  image?: string;
+  /** Alt text for the social preview image. */
+  imageAlt?: string;
+  /** 'article' for case studies, 'website' otherwise. */
+  type?: 'website' | 'article';
+  /** Set true on pages that should not be indexed (the 404 page). */
+  noindex?: boolean;
+}
+
+const {
+  title = `${profile.name} | ${profile.roles}`,
+  description = profile.description,
+  image = '/og.png',
+  imageAlt = 'Melvin Mathew, Data Scientist and AI/ML Engineer, with headline project results',
+  type = 'website',
+  noindex = false,
+} = Astro.props;
+
+// Structured data so search engines can show a proper profile result.
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  jobTitle: 'Data Scientist and AI/ML Engineer',
+  url: Astro.site?.toString(),
+  image: new URL('/melvin-mathew.jpg', Astro.site).toString(),
+  email: `mailto:${profile.email}`,
+  address: { '@type': 'PostalAddress', addressLocality: 'Bengaluru', addressCountry: 'IN' },
+  sameAs: [profile.linkedin, profile.github],
+};
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
+const year = new Date().getFullYear();
+---
+<!doctype html>
+<html lang="en-IN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <!-- Browser-bar colour: follows the OS; the theme scripts below override both tags when the visitor picks a theme. -->
+    <meta name="theme-color" content="#0f1720" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f5f7f7" media="(prefers-color-scheme: light)" />
+
+    <!-- Open Graph / social preview -->
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={profile.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta property="og:locale" content="en_IN" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={imageAlt} />
+    <script type="application/ld+json" set:html={JSON.stringify(personLd)} />
+
+    <!-- Apply a theme the visitor picked before first paint, so there is no flash.
+         With no saved choice, the CSS follows the OS setting. -->
+    <script is:inline>
+      try {
+        const t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') {
+          document.documentElement.dataset.theme = t;
+          const c = t === 'light' ? '#f5f7f7' : '#0f1720';
+          document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute('content', c));
+        }
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="site-header wrap">
+      <a class="brand" href="/">{profile.name}</a>
+      <nav aria-label="Main">
+        <ul>
+          <li><a href="/projects/">Projects</a></li>
+          <li><a href="/#experience">Experience</a></li>
+          <li><a href="/#contact">Contact</a></li>
+          <li><a href={profile.resume}>Resume</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Light theme" aria-pressed="false" title="Light theme">
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="9" /><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" />
+        </svg>
+      </button>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer wrap">
+      <p>© {year} {profile.name}. Built with Astro, hosted on GitHub Pages.</p>
+      <p>
+        <a href={`mailto:${profile.email}`}>Email</a>
+        <a href={profile.linkedin}>LinkedIn</a>
+        <a href={profile.github}>GitHub</a>
+      </p>
+    </footer>
+
+    <script is:inline>
+      // Theme toggle: follows the OS until clicked, then switches between light and dark
+      // and remembers the choice. aria-pressed tells screen readers whether light is on.
+      const toggle = document.querySelector('.theme-toggle');
+      const root = document.documentElement;
+      const osLight = window.matchMedia('(prefers-color-scheme: light)');
+      const isLight = () => (root.dataset.theme ? root.dataset.theme === 'light' : osLight.matches);
+      const sync = () => toggle.setAttribute('aria-pressed', String(isLight()));
+      sync();
+      osLight.addEventListener('change', sync);
+      toggle.addEventListener('click', () => {
+        const next = isLight() ? 'dark' : 'light';
+        root.dataset.theme = next;
+        const c = next === 'light' ? '#f5f7f7' : '#0f1720';
+        document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute('content', c));
+        sync();
+        try { localStorage.setItem('theme', next); } catch (e) {}
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  .site-header {
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    padding-top: 1.25rem; padding-bottom: 1.25rem;
+  }
+  .brand { font-family: var(--font-head); font-weight: 600; font-size: 1.125rem; color: var(--ink); text-decoration: none; margin-right: auto; }
+  nav ul { display: flex; gap: 1.25rem; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
+  nav a { color: var(--muted); text-decoration: none; font-size: var(--step--1); }
+  nav a:hover { color: var(--ink); }
+  .theme-toggle {
+    display: grid; place-items: center; width: 2.5rem; height: 2.5rem;
+    background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 50%; cursor: pointer;
+  }
+  .site-footer {
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem 2rem;
+    border-top: 1px solid var(--line); margin-top: 4rem; padding-top: 1.5rem; padding-bottom: 2.5rem;
+    color: var(--muted); font-size: var(--step--1);
+  }
+  .site-footer p { margin: 0; }
+  .site-footer a { margin-right: 1rem; }
+  @media (max-width: 560px) {
+    nav ul { gap: 1rem; }
+    .brand { width: 100%; }
+  }
+</style>

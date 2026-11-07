@@ -1,0 +1,129 @@
+/* ==========================================================================
+   Design tokens. Dark theme is the base; light overrides below follow the OS setting
+   unless the visitor has picked a theme with the toggle.
+   Amber marks a "before" or corrected figure; teal marks a measured result.
+   ========================================================================== */
+:root {
+  --bg: #0f1720;
+  --surface: #172230;
+  --ink: #e6ebf0;
+  --muted: #9aa6b5;
+  --line: #2a3747;
+  --accent: #2dd4bf;
+  --accent-ink: #0f1720;
+  --amber: #f59e0b;
+  /* Dims the portrait's white backdrop in the dark theme so it doesn't glare. */
+  --photo-filter: brightness(0.88);
+
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-head: Charter, 'Bitstream Charter', 'Iowan Old Style', 'Sitka Text', Cambria, Georgia, serif;
+
+  --step--1: 0.875rem;
+  --step-0: 1rem;
+  --step-1: 1.25rem;
+  --step-2: 1.6rem;
+  --step-3: clamp(2rem, 1.4rem + 2.6vw, 3rem);
+
+  --wrap: 1040px;
+  --read: 680px;
+  --gutter: clamp(1rem, 4vw, 2rem);
+  --radius: 6px;
+
+  color-scheme: dark;
+}
+
+/* Light theme: when the visitor's OS asks for light (and they haven't picked dark with the toggle),
+   or when they pick light with the toggle. The two blocks must stay identical. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    --bg: #f5f7f7;
+    --surface: #ffffff;
+    --ink: #17233b;
+    --muted: #5b6577;
+    --line: #d9dee3;
+    --accent: #0f766e;
+    --accent-ink: #ffffff;
+    --amber: #b45309;
+    --photo-filter: none;
+    color-scheme: light;
+  }
+}
+:root[data-theme='light'] {
+  --bg: #f5f7f7;
+  --surface: #ffffff;
+  --ink: #17233b;
+  --muted: #5b6577;
+  --line: #d9dee3;
+  --accent: #0f766e;
+  --accent-ink: #ffffff;
+  --amber: #b45309;
+  --photo-filter: none;
+  color-scheme: light;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 1rem; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  overflow-wrap: break-word;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-head);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5em;
+  text-wrap: balance;
+}
+h2 { font-size: var(--step-2); }
+h3 { font-size: var(--step-1); }
+p { margin: 0 0 1em; }
+
+a { color: var(--accent); text-underline-offset: 0.18em; }
+a:hover { text-decoration-thickness: 2px; }
+
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+.num { font-variant-numeric: tabular-nums lining-nums; }
+
+.wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
+.read { max-width: var(--read); }
+
+.skip {
+  position: absolute; left: -9999px; top: 0;
+  background: var(--accent); color: var(--accent-ink); padding: 0.5rem 1rem; z-index: 10;
+}
+.skip:focus { left: 1rem; top: 1rem; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* Buttons: one solid primary, the rest outlined. */
+.btn {
+  display: inline-flex; align-items: center; gap: 0.4em;
+  padding: 0.6em 1.1em; border-radius: var(--radius);
+  border: 1px solid var(--accent); font-weight: 600; text-decoration: none;
+  color: var(--accent); background: transparent;
+}
+.btn:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-primary:hover { background: color-mix(in srgb, var(--accent) 85%, var(--ink)); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

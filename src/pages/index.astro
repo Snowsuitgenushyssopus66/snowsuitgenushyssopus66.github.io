@@ -1,0 +1,275 @@
+---
+// Home page. Content comes from src/data/site.ts and the featured entries in src/content/projects/.
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.jsx';
+import { getProjects } from '../lib/projects';
+import { profile, corrections, experience, experienceLabel, skills, education, certifications } from '../data/site';
+
+const featured = await getProjects((p) => p.tier === 'featured');
+const total = (await getProjects()).length;
+---
+<Base>
+  <!-- Hero: who, for which roles, availability, and the three actions a recruiter wants. -->
+  <section class="hero wrap" aria-labelledby="hero-title">
+    <div class="hero-text">
+    <h1 id="hero-title">{profile.name}</h1>
+    <p class="lede read">
+      Data Scientist and AI/ML Engineer. I build fraud detection, forecasting, credit-risk and RAG systems,
+      then test them until the numbers hold up.
+    </p>
+    <p class="availability read">
+      <span class="dot" aria-hidden="true"></span>
+      <span><strong>Available now.</strong> Based in {profile.location} and open to relocation, remote work and freelance projects.</span>
+    </p>
+    <div class="actions">
+      <a class="btn btn-primary" href="#work">See my work</a>
+      <a class="btn" href={profile.resume} download="Melvin_Mathew_Resume.pdf">Download resume (PDF)</a>
+      <a class="btn" href={`mailto:${profile.email}`}>Email me</a>
+    </div>
+    </div>
+    <picture class="portrait">
+      <source srcset="/melvin-mathew.webp" type="image/webp" />
+      <img src="/melvin-mathew.jpg" alt="Portrait of Melvin Mathew" width="320" height="320" fetchpriority="high" />
+    </picture>
+  </section>
+
+  <!-- Correction ledger: the signature element. Reported figure struck through, measured figure beside it. -->
+  <section class="ledger-section wrap" aria-labelledby="ledger-title">
+    <h2 id="ledger-title">Numbers I corrected before anyone else had to</h2>
+    <p class="read muted">
+      Every project here started with a figure that looked fine. These are the ones that changed most once I went
+      looking for what was wrong.
+    </p>
+    <table class="ledger">
+      <caption class="visually-hidden">Reported figures and the figures measured after checking</caption>
+      <thead>
+        <tr>
+          <th scope="col">Project</th>
+          <th scope="col">Metric</th>
+          <th scope="col">Reported</th>
+          <th scope="col">Measured</th>
+        </tr>
+      </thead>
+      <tbody>
+        {corrections.map((c) => (
+          <tr>
+            <th scope="row">
+              <a href={c.href}>{c.project}</a>
+              <span class="why">{c.note}</span>
+            </th>
+            <td data-label="Metric">{c.measure}</td>
+            <td data-label="Reported" class="num before"><s><span class="visually-hidden">reported </span>{c.before}</s></td>
+            <td data-label="Measured" class="num after">{c.after}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Featured work: the projects with case studies. -->
+  <section id="work" class="wrap section" aria-labelledby="work-title">
+    <h2 id="work-title">Selected work</h2>
+    <p class="read muted">{featured.length} projects with full write-ups. Every result comes from the project's own test and evaluation reports.</p>
+    <ol class="project-list" role="list">
+      {featured.map((p) => <li><ProjectCard project={p} /></li>)}
+    </ol>
+    <p class="more"><a class="btn" href="/projects/">See all {total} projects</a></p>
+  </section>
+
+  <!-- About, plus the working method. The three steps are a real sequence, so they are numbered. -->
+  <section id="about" class="wrap section about" aria-labelledby="about-title">
+    <div class="read">
+      <h2 id="about-title">About</h2>
+      <p>
+        I'm a Data Scientist with {experienceLabel()} of experience across fraud and credit-risk classification, forecasting,
+        clinical prediction, recommenders and GenAI/RAG. My foundation is a BSc in Mathematics, which gives me the
+        statistics to build models I can explain and defend in a stakeholder review, not just tune for a leaderboard.
+      </p>
+      <p>
+        I'm looking for Data Scientist, ML Engineer and AI Engineer roles, in Bengaluru, Hyderabad, Chennai or
+        anywhere else, and I take on freelance projects.
+      </p>
+    </div>
+    <div>
+      <h3>How I work</h3>
+      <ol class="method">
+        <li><strong>Reproduce it.</strong> Rerun the result exactly before trusting or changing anything.</li>
+        <li><strong>Try to break it.</strong> Look for leakage, weak baselines and evaluation that flatters the model.</li>
+        <li><strong>Measure and say so.</strong> Report the honest number, including when a target was missed.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Experience timeline: wording from LinkedIn. -->
+  <section id="experience" class="wrap section" aria-labelledby="exp-title">
+    <h2 id="exp-title">Experience</h2>
+    <ol class="timeline" role="list">
+      {experience.map((job) => (
+        <li>
+          <p class="when num">{job.dates}</p>
+          <div>
+            <h3>{job.role}</h3>
+            <p class="org">{job.org}</p>
+            {job.note && <p class="muted small">{job.note}</p>}
+            <ul>
+              {job.points.map((pt) => <li>{pt}</li>)}
+            </ul>
+            {job.tools && (
+              <p class="tools"><span class="visually-hidden">Tools: </span>{job.tools.join(', ')}</p>
+            )}
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <!-- Skills, grouped. -->
+  <section id="skills" class="wrap section" aria-labelledby="skills-title">
+    <h2 id="skills-title">Skills</h2>
+    <dl class="skills">
+      {skills.map((s) => (
+        <div>
+          <dt>{s.group}</dt>
+          <dd>{s.items.join(', ')}</dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  <!-- Education and certifications. -->
+  <section id="education" class="wrap section edu" aria-labelledby="edu-title">
+    <div>
+      <h2 id="edu-title">Education</h2>
+      <ul class="plain">
+        {education.map((e) => (
+          <li><strong>{e.title}</strong>, {e.org} <span class="muted num">({e.dates})</span></li>
+        ))}
+      </ul>
+    </div>
+    <div>
+      <h2>Certifications</h2>
+      <ul class="plain">
+        {certifications.map((c) => (
+          <li>
+            {c.url ? <a href={c.url}>{c.name}</a> : c.name}
+            {c.issuer && <span class="muted">, {c.issuer}</span>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Contact. -->
+  <section id="contact" class="wrap section contact" aria-labelledby="contact-title">
+    <h2 id="contact-title">Get in touch</h2>
+    <p class="read">
+      Hiring for a data science or AI/ML role, or need help with a model or an LLM application? Email is the fastest way
+      to reach me.
+    </p>
+    <ul class="contact-list" role="list">
+      <li><span class="label">Email</span><a href={`mailto:${profile.email}`}>{profile.email}</a></li>
+      <li><span class="label">LinkedIn</span><a href={profile.linkedin}>linkedin.com/in/mathew-melvin</a></li>
+      <li><span class="label">GitHub</span><a href={profile.github}>github.com/melvinmathew9991</a></li>
+      <li><span class="label">Resume</span><a href={profile.resume} download="Melvin_Mathew_Resume.pdf">PDF, updated <time datetime={profile.resumeUpdated}>{new Date(profile.resumeUpdated).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</time></a></li>
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .section { margin-top: clamp(3.5rem, 8vw, 6rem); }
+  .muted { color: var(--muted); }
+  .small { font-size: var(--step--1); }
+
+  /* Hero */
+  .hero {
+    padding-top: clamp(2.5rem, 8vw, 5.5rem);
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2rem 3rem; align-items: center;
+  }
+  .portrait img {
+    display: block; width: clamp(9rem, 18vw, 13rem); height: auto; aspect-ratio: 1; border-radius: 50%;
+    border: 1px solid var(--line); background: var(--surface);
+    filter: var(--photo-filter);
+  }
+  @media (max-width: 720px) {
+    .hero { grid-template-columns: 1fr; }
+    .portrait { order: -1; }
+    .portrait img { width: 7.5rem; }
+  }
+  .hero h1 { font-size: var(--step-3); margin-bottom: 0.4em; }
+  .lede { font-size: var(--step-1); line-height: 1.5; }
+  .availability { display: flex; gap: 0.6rem; align-items: baseline; color: var(--muted); }
+  .availability strong { color: var(--ink); }
+  .dot { flex: none; width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--accent); transform: translateY(-0.05em); }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.75rem; }
+
+  /* Correction ledger */
+  .ledger-section { margin-top: clamp(3.5rem, 8vw, 5.5rem); }
+  .ledger { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
+  .ledger thead th {
+    text-align: left; font-family: var(--font-body); font-weight: 600; font-size: var(--step--1);
+    color: var(--muted); padding: 0 1rem 0.6rem 0; border-bottom: 2px solid var(--ink);
+  }
+  .ledger tbody th, .ledger td { padding: 1.1rem 1rem 1.1rem 0; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+  .ledger tbody th { font-weight: 600; width: 46%; }
+  .ledger tbody th a { color: var(--ink); }
+  .why { display: block; font-weight: 400; color: var(--muted); font-size: var(--step--1); margin-top: 0.25rem; max-width: 46ch; }
+  .ledger td { white-space: nowrap; color: var(--muted); }
+  .before { color: var(--amber) !important; font-size: var(--step-1); }
+  .before s { text-decoration-thickness: 2px; }
+  .after { color: var(--accent) !important; font-size: var(--step-2); font-weight: 700; font-family: var(--font-head); line-height: 1.1; }
+  .ledger thead th:nth-child(n + 3), .ledger td.num { text-align: right; }
+  .ledger td:last-child, .ledger thead th:last-child { padding-right: 0; }
+
+  /* On small screens each row becomes a stacked block: project, then reported/measured side by side. */
+  @media (max-width: 640px) {
+    .ledger thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .ledger tbody tr {
+      display: grid; grid-template-columns: auto 1fr auto; column-gap: 1rem; align-items: baseline;
+      padding: 1rem 0; border-bottom: 1px solid var(--line);
+    }
+    .ledger tbody th, .ledger td { border: 0; padding: 0; width: auto; }
+    .ledger tbody th { grid-column: 1 / -1; margin-bottom: 0.6rem; }
+    .ledger td.num { text-align: left; }
+    .after { text-align: right !important; }
+  }
+
+  /* Projects list (card styles live in src/styles/projects.css) */
+  .project-list { margin-top: 2rem; }
+  .more { margin-top: 2rem; }
+
+  /* About */
+  .about { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 2rem 4rem; }
+  .method { padding-left: 1.25rem; margin: 0; }
+  .method li { margin-bottom: 0.75rem; }
+  .method li::marker { font-family: var(--font-head); font-weight: 600; color: var(--accent); }
+  @media (max-width: 800px) { .about { grid-template-columns: 1fr; } }
+
+  /* Experience timeline */
+  .timeline { list-style: none; padding: 0; margin: 2rem 0 0; }
+  .timeline > li {
+    display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 0.25rem 2rem;
+    padding: 1.5rem 0; border-top: 1px solid var(--line);
+  }
+  .when { color: var(--muted); font-size: var(--step--1); margin: 0.2rem 0 0; }
+  .timeline h3 { margin-bottom: 0.15em; }
+  .org { color: var(--muted); margin-bottom: 0.6rem; }
+  .timeline ul { padding-left: 1.1rem; margin: 0; max-width: var(--read); }
+  .timeline ul li { margin-bottom: 0.4rem; }
+  .tools { color: var(--muted); font-size: var(--step--1); margin: 0.75rem 0 0; max-width: var(--read); }
+  @media (max-width: 640px) { .timeline > li { grid-template-columns: 1fr; } }
+
+  /* Skills */
+  .skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: 1.5rem 3rem; margin: 1.5rem 0 0; }
+  .skills dt { font-weight: 600; margin-bottom: 0.25rem; }
+  .skills dd { margin: 0; color: var(--muted); }
+
+  /* Education */
+  .edu { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: 2rem 4rem; }
+  .plain { list-style: none; padding: 0; margin: 0; }
+  .plain li { padding: 0.5rem 0; border-bottom: 1px solid var(--line); }
+
+  /* Contact */
+  .contact-list { list-style: none; padding: 0; margin: 1.5rem 0 0; max-width: var(--read); }
+  .contact-list li { display: grid; grid-template-columns: 6rem minmax(0, 1fr); gap: 1rem; padding: 0.7rem 0; border-top: 1px solid var(--line); }
+  .label { color: var(--muted); }
+</style>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://melvinmathew9991.github.io/sitemap-index.xml

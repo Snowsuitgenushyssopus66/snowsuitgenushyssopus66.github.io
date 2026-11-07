@@ -1,0 +1,68 @@
+---
+// Case-study page for each featured project: summary card, then the Markdown body.
+import fs from 'node:fs';
+import path from 'node:path';
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const featured = await getCollection('projects', ({ data }) => data.tier === 'featured');
+  return featured.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const p = entry.data;
+const { Content } = await render(entry);
+
+// Per-project social preview made by scripts/make-og.cjs. Falls back to the site-wide
+// /og.png if this project's image hasn't been generated yet, so a link card never breaks.
+const ogFile = `/og/${entry.id}.png`;
+const hasOwnOg = fs.existsSync(path.join(process.cwd(), 'public', ogFile));
+---
+<Base
+  title={`${p.title} | Melvin Mathew`}
+  description={p.outcome}
+  type="article"
+  image={hasOwnOg ? ogFile : undefined}
+  imageAlt={hasOwnOg ? `${p.title}: case study by Melvin Mathew, with headline results` : undefined}
+>
+  <article class="wrap case">
+    <p class="crumb"><a href="/#work">Selected work</a></p>
+    <h1>{p.title}</h1>
+    <p class="outcome read">{p.outcome}</p>
+    <dl class="metrics">
+      {p.metrics.map((m) => (<div><dd class="num">{m.value}</dd><dt>{m.label}</dt></div>))}
+    </dl>
+    <p class="muted"><strong>Stack:</strong> {p.stack.join(', ')}</p>
+    <p class="links">
+      {p.repo && <a class="btn btn-primary" href={p.repo}>View the code</a>}
+      {p.demo.map((d) => <a class="btn" href={d.url}>{d.label}</a>)}
+    </p>
+    <div class="body read"><Content /></div>
+    <p class="back"><a href="/projects/">See all projects</a></p>
+  </article>
+</Base>
+
+<style>
+  .case { padding-top: 2rem; }
+  .crumb { font-size: var(--step--1); }
+  h1 { font-size: var(--step-3); }
+  .outcome { font-size: var(--step-1); }
+  .muted { color: var(--muted); }
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: 1.5rem; margin: 2rem 0; padding: 1.5rem 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .metrics div { display: flex; flex-direction: column; }
+  .metrics dd { margin: 0; font-family: var(--font-head); font-weight: 700; font-size: var(--step-2); color: var(--accent); }
+  .metrics dt { color: var(--muted); font-size: var(--step--1); }
+  .links { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+  /* Case-study body (Markdown). :global because the HTML comes from the Markdown renderer. */
+  .body { margin-top: 3rem; }
+  .body :global(h2) { margin-top: 2.5rem; }
+  .body :global(ul), .body :global(ol) { padding-left: 1.25rem; }
+  .body :global(li) { margin-bottom: 0.5rem; }
+  .body :global(code) { font-size: 0.9em; background: var(--surface); padding: 0.1em 0.35em; border-radius: 4px; }
+  .body :global(table) { width: 100%; border-collapse: collapse; margin: 1.25rem 0 1.5rem; font-size: var(--step--1); display: block; overflow-x: auto; }
+  .body :global(th), .body :global(td) { text-align: left; padding: 0.6rem 1rem 0.6rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .body :global(th) { color: var(--muted); font-weight: 600; border-bottom: 2px solid var(--ink); }
+  .back { margin-top: 3rem; }
+</style>

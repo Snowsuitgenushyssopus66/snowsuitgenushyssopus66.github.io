@@ -1,0 +1,29 @@
+---
+// /projects/ — every project, filterable by role and searchable by tool.
+import Base from '../../layouts/Base.astro';
+import ProjectBrowser from '../../components/ProjectBrowser.jsx';
+import { getProjects } from '../../lib/projects';
+
+const projects = await getProjects();
+const featuredCount = projects.filter((p) => p.tier === 'featured').length;
+---
+<Base
+  title="Projects | Melvin Mathew"
+  description={`All ${projects.length} data science, AI/ML engineering and analytics projects by Melvin Mathew, each with measured results and code.`}
+>
+  <section class="wrap intro">
+    <h1>Projects</h1>
+    <p class="read">
+      All {projects.length} projects, strongest first. The first {featuredCount} have full case studies. Every number comes from
+      the project's own evaluation report, including the ones that missed their targets.
+    </p>
+    <!-- client:idle: rendered to HTML at build time, then made interactive once the browser is idle,
+         so React never competes with first paint. -->
+    <ProjectBrowser client:idle projects={projects} />
+  </section>
+</Base>
+
+<style>
+  .intro { padding-top: 2rem; }
+  h1 { font-size: var(--step-3); }
+</style>

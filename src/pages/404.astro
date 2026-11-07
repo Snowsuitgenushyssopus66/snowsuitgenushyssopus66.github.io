@@ -1,0 +1,19 @@
+---
+// Shown by GitHub Pages for any URL that doesn't exist.
+import Base from '../layouts/Base.astro';
+---
+<Base title="Page not found | Melvin Mathew" description="This page doesn't exist." noindex>
+  <section class="wrap nf">
+    <h1>Page not found</h1>
+    <p class="read">This address doesn't match any page. It may have been mistyped, or the page may have moved.</p>
+    <p class="actions">
+      <a class="btn btn-primary" href="/">Go to the home page</a>
+      <a class="btn" href="/projects/">Browse all projects</a>
+    </p>
+  </section>
+</Base>
+<style>
+  .nf { padding-top: clamp(3rem, 10vw, 7rem); min-height: 50vh; }
+  h1 { font-size: var(--step-3); }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+</style>
