@@ -13,6 +13,9 @@ export const profile = {
   resume: '/resume.pdf',
   // Update this date whenever public/resume.pdf is replaced.
   resumeUpdated: '2026-11-07',
+  // Web3Forms access key for the contact form (get one free at https://web3forms.com).
+  // Empty = the form is hidden and only the email/LinkedIn links show. Safe to publish.
+  contactFormKey: 'b8f0bce5-b270-4ef0-974c-cbdf4cebbc97',
   description:
     'Data Scientist and AI/ML Engineer in Bengaluru. Fraud detection, forecasting, credit risk and RAG systems, each audited until the numbers held up. Available now for full-time and freelance work.',
 };

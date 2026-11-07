@@ -1,0 +1,85 @@
+---
+// Contact form, delivered by Web3Forms (https://web3forms.com) straight to Melvin's inbox.
+// The site stays static: the browser posts the form to Web3Forms, not to a server of ours.
+// The access key is safe to publish: it can only send mail to the address it was created for.
+// With JavaScript the result shows inline; without it, the form still posts and Web3Forms
+// shows its own confirmation page.
+import { profile } from '../data/site';
+const key = profile.contactFormKey;
+---
+
+{key && (
+  <form class="contact-form" action="https://api.web3forms.com/submit" method="POST">
+    <input type="hidden" name="access_key" value={key} />
+    <input type="hidden" name="subject" value="New message from your portfolio" />
+    <input type="hidden" name="from_name" value="Portfolio contact form" />
+    {/* Spam trap: hidden from people, bots fill it in and Web3Forms drops the message. */}
+    <input type="checkbox" name="botcheck" class="visually-hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+    <div class="field">
+      <label for="cf-name">Name</label>
+      <input id="cf-name" name="name" type="text" autocomplete="name" required maxlength="100" />
+    </div>
+    <div class="field">
+      <label for="cf-email">Email</label>
+      <input id="cf-email" name="email" type="email" autocomplete="email" required maxlength="200" />
+    </div>
+    <div class="field">
+      <label for="cf-message">Message</label>
+      <textarea id="cf-message" name="message" rows="5" required maxlength="5000"></textarea>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Send message</button>
+    <p class="form-status" role="status" aria-live="polite"></p>
+  </form>
+)}
+
+<script>
+  // Send without leaving the page, and say plainly whether it worked.
+  const form = document.querySelector<HTMLFormElement>('.contact-form');
+  if (form) {
+    const status = form.querySelector<HTMLElement>('.form-status')!;
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      button.disabled = true;
+      status.dataset.state = '';
+      status.textContent = 'Sending…';
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.success) throw new Error(data.message || `HTTP ${res.status}`);
+        form.reset();
+        status.dataset.state = 'ok';
+        status.textContent = 'Thanks, your message was sent. I’ll get back to you soon.';
+      } catch {
+        status.dataset.state = 'error';
+        status.textContent = 'Sorry, that didn’t send. Please email me directly instead.';
+      } finally {
+        button.disabled = false;
+      }
+    });
+  }
+</script>
+
+<style>
+  .contact-form { display: grid; gap: 1rem; max-width: var(--read); margin: 1.5rem 0 2rem; }
+  .field { display: grid; gap: 0.35rem; }
+  label { font-size: var(--step--1); font-weight: 600; }
+  input:not([type='hidden']):not([type='checkbox']), textarea {
+    font: inherit; color: var(--ink); background: var(--surface);
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 0.6rem 0.75rem; width: 100%;
+  }
+  textarea { resize: vertical; min-height: 8rem; }
+  input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+  button { justify-self: start; cursor: pointer; font: inherit; font-weight: 600; }
+  button:disabled { opacity: 0.6; cursor: wait; }
+  .form-status { margin: 0; font-size: var(--step--1); min-height: 1.5em; }
+  .form-status[data-state='ok'] { color: var(--accent); }
+  .form-status[data-state='error'] { color: var(--amber); }
+</style>

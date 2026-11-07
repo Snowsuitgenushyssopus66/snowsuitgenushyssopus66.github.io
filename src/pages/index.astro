@@ -2,6 +2,7 @@
 // Home page. Content comes from src/data/site.ts and the featured entries in src/content/projects/.
 import Base from '../layouts/Base.astro';
 import ProjectCard from '../components/ProjectCard.jsx';
+import ContactForm from '../components/ContactForm.astro';
 import { getProjects } from '../lib/projects';
 import { profile, corrections, experience, experienceLabel, skills, education, certifications } from '../data/site';
 
@@ -163,9 +164,10 @@ const total = (await getProjects()).length;
   <section id="contact" class="wrap section contact" aria-labelledby="contact-title">
     <h2 id="contact-title">Get in touch</h2>
     <p class="read">
-      Hiring for a data science or AI/ML role, or need help with a model or an LLM application? Email is the fastest way
-      to reach me.
+      Hiring for a data science or AI/ML role, or need help with a model or an LLM application?
+      {profile.contactFormKey ? 'Send me a message here, or use any of the links below.' : 'Email is the fastest way to reach me.'}
     </p>
+    <ContactForm />
     <ul class="contact-list" role="list">
       <li><span class="label">Email</span><a href={`mailto:${profile.email}`}>{profile.email}</a></li>
       <li><span class="label">LinkedIn</span><a href={profile.linkedin}>linkedin.com/in/mathew-melvin</a></li>
