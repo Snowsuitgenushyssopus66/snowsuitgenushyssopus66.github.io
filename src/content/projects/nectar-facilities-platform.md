@@ -1,6 +1,6 @@
 ---
 title: "Nectar facilities analytics platform"
-outcome: "An end-to-end IoT analytics pipeline for building assets: predictive maintenance, day-ahead energy forecasting and anomaly detection, on synthetic data as the brief required."
+outcome: "An 82-feature predictive-maintenance pipeline with no-lookahead leakage tests, plus day-ahead energy forecasting and anomaly detection for building assets, on synthetic data as the take-home brief required."
 role: Data Science
 stack: ["Python", "scikit-learn", "XGBoost", "LightGBM", "statsmodels", "SHAP", "NetworkX", "Streamlit"]
 metrics:

@@ -62,8 +62,16 @@ export const experience = [
     dates: 'Jan 2026 – Present',
     // Left out of the "years of experience" figure in the About section.
     countsTowardYears: false,
+    note: 'Freelance data science and AI work for clients, alongside public portfolio projects (code on GitHub). Portfolio projects from this period:',
+    // Tool row: only tools in the stack lists of the three projects below.
+    tools: ['Python', 'XGBoost', 'LightGBM', 'FastAPI', 'Docker', 'Google Cloud Run', 'GitHub Actions', 'Streamlit'],
+    // Every figure below is from the matching project page in src/content/projects/.
     points: [
-      'Freelance data science and AI work for clients, alongside portfolio projects. All project code is public on GitHub.',
+      'Rebuilt an inherited bike-taxi demand forecaster on 8.38M real Bengaluru bookings using XGBoost with 1-day and 7-day lags. It went from tying a seasonal-naive baseline and failing its deploy gate (MASE 0.999) to beating that baseline on all 50 clusters (MASE 0.804).',
+      'Ran rolling-origin backtests under 5.2× demand growth and found that a frozen model can lose to naive from week 6 in the worst case, so the model ships with retraining every 4 weeks. Deployed it as a gated FastAPI service on Cloud Run with a model registry, rollback and 352 tests.',
+      'Deployed an AML fraud pipeline on 6.36M simulated (PaySim) transactions to Cloud Run, using keyless GitHub Actions CI/CD. It catches 95.1% of fraud with zero false positives at 250 reviews a day, with PSI drift monitoring and 234 tests.',
+      // "82-feature" and "no-lookahead leakage tests": wording confirmed by Melvin from the Nectar repo.
+      'Built an 82-feature predictive-maintenance pipeline with no-lookahead leakage tests for the Nectar building-assets platform, plus day-ahead energy forecasting and anomaly detection, on synthetic data as the take-home brief required. The energy forecaster reaches 9.27% MAPE against 161% for a Holt-Winters baseline, backed by 55 tests.',
     ],
   },
   {
