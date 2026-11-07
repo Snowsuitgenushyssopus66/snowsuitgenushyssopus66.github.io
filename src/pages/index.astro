@@ -171,9 +171,7 @@ const total = (await getProjects()).length;
     <ul class="contact-list" role="list">
       <li><span class="label">Email</span><a href={`mailto:${profile.email}`}>{profile.email}</a></li>
       <li><span class="label">LinkedIn</span><a href={profile.linkedin}>linkedin.com/in/mathew-melvin</a></li>
-      <li><span class="label">GitHub</span><a href={profile.github}>github.com/melvinmathew9991</a></li>
-      <li><span class="label">Resume</span><a href={profile.resume} download="Melvin_Mathew_Resume.pdf">PDF, updated <time datetime={profile.resumeUpdated}>{new Date(profile.resumeUpdated).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</time></a></li>
-    </ul>
+      <li><span class="label">GitHub</span><a href={profile.github}>github.com/melvinmathew9991</a></li>    </ul>
   </section>
 </Base>
 
