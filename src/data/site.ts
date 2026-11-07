@@ -12,7 +12,7 @@ export const profile = {
   github: 'https://github.com/melvinmathew9991',
   resume: '/resume.pdf',
   // Update this date whenever public/resume.pdf is replaced.
-  resumeUpdated: '2026-11-06',
+  resumeUpdated: '2026-11-07',
   description:
     'Data Scientist and AI/ML Engineer in Bengaluru. Fraud detection, forecasting, credit risk and RAG systems, each audited until the numbers held up. Available now for full-time and freelance work.',
 };
