@@ -93,7 +93,10 @@ const year = new Date().getFullYear();
   <body>
     <a class="skip" href="#main">Skip to content</a>
 
-    <header class="site-header wrap">
+    <!-- Sticky header: the outer bar spans the full width (so its background covers content scrolling
+         under it); the inner .wrap keeps the contents aligned with the page. -->
+    <header class="site-header">
+      <div class="wrap header-inner">
       <a class="brand" href="/">{profile.name}</a>
       <nav aria-label="Main">
         <ul>
@@ -108,6 +111,7 @@ const year = new Date().getFullYear();
           <circle cx="12" cy="12" r="9" /><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" />
         </svg>
       </button>
+      </div>
     </header>
 
     <main id="main">
@@ -146,9 +150,15 @@ const year = new Date().getFullYear();
 </html>
 
 <style>
+  /* Stays at the top while scrolling. z-index sits below the skip link (10). */
   .site-header {
+    position: sticky; top: 0; z-index: 5;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+  .header-inner {
     display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
-    padding-top: 1.25rem; padding-bottom: 1.25rem;
+    padding-top: 0.75rem; padding-bottom: 0.75rem;
   }
   .brand { font-family: var(--font-head); font-weight: 600; font-size: 1.125rem; color: var(--ink); text-decoration: none; margin-right: auto; }
   nav ul { display: flex; gap: 1.25rem; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
@@ -168,5 +178,6 @@ const year = new Date().getFullYear();
   @media (max-width: 560px) {
     nav ul { gap: 1rem; }
     .brand { width: 100%; }
+    .header-inner { gap: 0.25rem 1rem; padding-top: 0.5rem; padding-bottom: 0.5rem; }
   }
 </style>

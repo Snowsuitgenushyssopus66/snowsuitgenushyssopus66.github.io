@@ -68,7 +68,10 @@
 *::before,
 *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: 1rem; }
+/* scroll-padding-top keeps #experience / #contact headings clear of the sticky header
+   (about 4rem tall on desktop, two rows on phones). */
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 5rem; }
+@media (max-width: 560px) { html { scroll-padding-top: 6.5rem; } }
 
 body {
   margin: 0;
